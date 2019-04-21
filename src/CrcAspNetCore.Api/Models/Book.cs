@@ -26,7 +26,7 @@ namespace CrcAspNetCore.Api.Models
         public string Isbn { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime PublishedAt { get; set; }
-
     }
 }
