@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CrcAspNetCore.Api.DbContexts;
 using CrcAspNetCore.Api.Models;
@@ -15,37 +15,33 @@ namespace CrcAspNetCore.Api.Repositories
         {
             _bookContext = bookContext;
         }
-
         public async Task<Book> GetByIdAsync(int id)
             => await _bookContext.Books.FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<IEnumerable<Book>> GetAllAsync()
-            => await _bookContext.Books.ToListAsync();
+        public async Task<Book> GetByIsbnAsync(string isbn)
+            => await _bookContext.Books.FirstOrDefaultAsync(x => x.Isbn == isbn);
+
+        public async Task<IEnumerable<Book>> SearchByPhraseAsync(string phrase)
+            => await _bookContext.Books.Where(x => x.Title.Contains(phrase)
+                                                   || x.Author.Contains(phrase)).Take(15).ToListAsync();
 
         public async Task AddAsync(Book book)
         {
             await _bookContext.Books.AddAsync(book);
-            await _bookContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(int id, Book book)
-        {
-            var OldBook = await GetByIdAsync(id);
-           
-            OldBook.Title = book.Title;
-            OldBook.Author = book.Author;
-            OldBook.Description = book.Description;
-            OldBook.Isbn = book.Isbn;
-            OldBook.PublishedAt = book.PublishedAt;
-
-            await _bookContext.SaveChangesAsync();
+            await SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
             var book = await GetByIdAsync(id);
             _bookContext.Books.Remove(book);
-            await _bookContext.SaveChangesAsync();
+            await SaveChangesAsync();
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            // Only return success if at least one row was changed
+            return await _bookContext.SaveChangesAsync() > 0;
         }
     }
 }
