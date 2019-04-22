@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using CrcAspNetCore.Api.Models;
 using CrcAspNetCore.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +12,12 @@ namespace CrcAspNetCore.Api.Controllers
     public class BookController : Controller
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
-        public BookController(IBookRepository bookRepository)
+        public BookController(IBookRepository bookRepository, IMapper mapper)
         {
             _bookRepository = bookRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}", Name = "GetBookById")]
@@ -29,37 +33,69 @@ namespace CrcAspNetCore.Api.Controllers
             return Ok(book);
         }
 
-        [HttpGet(Name = "GetAll")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("isbn/{isbn}", Name = "GetBookByIsbn")]
+        public async Task<IActionResult> Get(string isbn)
         {
-            var books = await _bookRepository.GetAllAsync();
-            
+            var book = await _bookRepository.GetByIsbnAsync(isbn);
+
+            if (book == null)
+            {
+                return NotFound($"Book with isbn '{isbn}' was not found ");
+            }
+
+            return Ok(book);
+        }
+
+        [HttpGet(Name = "Search")]
+        public async Task<IActionResult> Search(string phrase)
+        {
+            var books = await _bookRepository.SearchByPhraseAsync(phrase);
+
             return Ok(books);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Book book)
-        {            
+        public async Task<IActionResult> Post([FromBody]CreationBookDto book)
+        {
             if (book == null)
             {
                 return NotFound("Book cannot be null");
             }
 
-            await _bookRepository.AddAsync(book);
+            var bookExist = await _bookRepository.GetByIsbnAsync(book.Isbn);
 
-            return CreatedAtRoute("GetBookById", new {id = book.Id}, book);
-        }
-        
-        [HttpPut]
-        public async Task<IActionResult> Update(int id, Book book)
-        {
-            var bookToUpdate = await _bookRepository.GetByIdAsync(id);
-            if (book == null)
+            if (bookExist != null)
             {
-                return NotFound($"Book with id '{id}' not found ");
+                return Conflict($"Book with isbn '{book.Isbn}' already exist");
             }
 
-            await _bookRepository.UpdateAsync(id, bookToUpdate);
+            var finalBook = _mapper.Map<Book>(book);
+
+            await _bookRepository.AddAsync(finalBook);
+
+            return CreatedAtRoute("GetBookByIsbn", new { isbn = book.Isbn }, finalBook);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]CreationBookDto book)
+        {
+            try
+            {
+                var bookToUpdate = await _bookRepository.GetByIdAsync(id);
+                if (bookToUpdate == null)
+                {
+                    return NotFound($"Book with id '{id}' not found ");
+                }
+
+                _mapper.Map(book, bookToUpdate);
+
+                await _bookRepository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Updating failure");
+            }
+
 
             return NoContent();
         }

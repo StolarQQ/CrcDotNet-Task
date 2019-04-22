@@ -7,9 +7,10 @@ namespace CrcAspNetCore.Api.Repositories
     public interface IBookRepository
     {
         Task<Book> GetByIdAsync(int id);
-        Task<IEnumerable<Book>> GetAllAsync();
+        Task<Book> GetByIsbnAsync(string isbn);
+        Task<IEnumerable<Book>> SearchByPhraseAsync(string phrase);
         Task AddAsync(Book book);
-        Task UpdateAsync(int id, Book book);
         Task DeleteAsync(int id);
+        Task<bool> SaveChangesAsync();
     }
 }
