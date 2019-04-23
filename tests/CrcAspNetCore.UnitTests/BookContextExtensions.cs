@@ -12,7 +12,7 @@ namespace CrcAspNetCore.UnitTests
             (
                 new Book()
                 {
-                    Id = 1,
+                    Id = 2,
                     Title = "C# in Depth",
                     Author = "Jon Skeet",
                     Description = "C# in Depth, Fourth Edition is your key to unlocking" +
@@ -22,11 +22,11 @@ namespace CrcAspNetCore.UnitTests
                 }
             );
 
-            dbContext.Add
+            dbContext.Books.Add
             (
                 new Book()
                 {
-                    Id = 2,
+                    Id = 3,
                     Title = "Pro C# 7",
                     Author = "Andrew Troelsen",
                     Description = "This essential classic title provides a comprehensive" +
@@ -36,11 +36,11 @@ namespace CrcAspNetCore.UnitTests
                 }
             );
 
-            dbContext.Add
+            dbContext.Books.Add
             (
                 new Book()
                 {
-                    Id = 3,
+                    Id = 4,
                     Title = "Clean Architecture: A Craftsman's Guide to Software Structure and Design",
                     Author = "Robert C. Martin",
                     Description = "Uncle Bob presents the universal rules of software" +
@@ -50,11 +50,11 @@ namespace CrcAspNetCore.UnitTests
                 }
             );
 
-            dbContext.Add
+            dbContext.Books.Add
             (
                 new Book()
                 {
-                    Id = 4,
+                    Id = 5,
                     Title = "Working Effectively with Legacy Code",
                     Author = "Michael Feathers",
                     Description = "In this book, Michael Feathers offers start-to-finish strategies for working more effectively with large, untested legacy code bases",
@@ -63,11 +63,11 @@ namespace CrcAspNetCore.UnitTests
                 }
             );
 
-            dbContext.Add
+            dbContext.Books.Add
             (
                 new Book()
                 {
-                    Id = 4,
+                    Id = 6,
                     Title = "Code Complete: A Practical Handbook of Software Construction",
                     Author = "Steve McConnel",
                     Description = "Widely considered one of the best practical guides to programming," +

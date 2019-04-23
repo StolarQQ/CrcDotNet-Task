@@ -10,7 +10,6 @@ namespace CrcAspNetCore.Api.AutoMapper
                 {
                     cfg.CreateMap<CreationBookDto, Book>()
                         .ForMember(x => x.Id, opt => opt.Ignore());
-
                 })
                 .CreateMapper();
     }
