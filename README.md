@@ -1,2 +1,2 @@
 # CrcDotNet-Task
-Simple Library - AspNetCore Api
+CrcTask - AspNetCoreApi
