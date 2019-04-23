@@ -21,7 +21,7 @@ namespace CrcAspNetCore.Api.Controllers
         }
 
         [HttpGet("{id}", Name = "GetBookById")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var book = await _bookRepository.GetByIdAsync(id);
 
@@ -34,7 +34,7 @@ namespace CrcAspNetCore.Api.Controllers
         }
 
         [HttpGet("isbn/{isbn}", Name = "GetBookByIsbn")]
-        public async Task<IActionResult> Get(string isbn)
+        public async Task<IActionResult> GetByIsbn(string isbn)
         {
             var book = await _bookRepository.GetByIsbnAsync(isbn);
 
@@ -95,7 +95,6 @@ namespace CrcAspNetCore.Api.Controllers
             {
                 return StatusCode(500, "Updating failure");
             }
-
 
             return NoContent();
         }

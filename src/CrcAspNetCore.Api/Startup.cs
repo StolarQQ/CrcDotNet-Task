@@ -1,4 +1,6 @@
-﻿using CrcAspNetCore.Api.DbContexts;
+﻿using AutoMapper;
+using CrcAspNetCore.Api.AutoMapper;
+using CrcAspNetCore.Api.DbContexts;
 using CrcAspNetCore.Api.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+
 
 namespace CrcAspNetCore.Api
 {
@@ -25,6 +28,7 @@ namespace CrcAspNetCore.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<BookContext>(options => options.UseSqlite(Configuration["ConnectionString:BookDb"]));
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddSingleton(AutoMapperConfig.Initialize());
             
             // Swagger configuration
             services.AddSwaggerGen(c =>
@@ -56,7 +60,7 @@ namespace CrcAspNetCore.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("api/swagger/v1/swagger.json", "WebApiServer BookLibrary API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiServer BookLibrary API");
             });
         }
     }
