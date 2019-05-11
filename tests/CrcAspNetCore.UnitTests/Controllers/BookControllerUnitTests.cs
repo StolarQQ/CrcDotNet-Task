@@ -134,8 +134,20 @@ namespace CrcAspNetCore.UnitTests.Controllers
             //Arrange
             var repository = BookContextMocker.GetInMemoryBookRepository
                 (nameof(post_book_with_correct_data_should_return_status_code_201));
-            var mapper = AutoMapperConfig.Initialize();
-            var controller = new BookController(repository, mapper);
+            var mapper = new Mock<IMapper>();
+            var book = new Book
+            {
+                Id = 10,
+                Title = "Adaptive Code",
+                Author = "Gary McLean Hall",
+                Description = "By applying this book’s principles, you can create code" +
+                              " that accommodates new requirements and unforeseen scenarios without significant rewrites.",
+                Isbn = "978-1509302581",
+                PublishedAt = new DateTime(2004, 10, 02)
+            };
+
+            mapper.Setup(x => x.Map<Book>(It.IsAny<CreationBookDto>())).Returns(book);
+            var controller = new BookController(repository, mapper.Object);
             
             //Act
             var response = await controller.Post(CorrectDummyCreationBookDto()) as ObjectResult;
@@ -152,8 +164,8 @@ namespace CrcAspNetCore.UnitTests.Controllers
             //Arrange
             var repository = BookContextMocker.GetInMemoryBookRepository
                 (nameof(post_book_with_exist_isbn_should_return_status_code_409));
-            var mapper = AutoMapperConfig.Initialize();
-            var controller = new BookController(repository, mapper);
+            var mapper = new Mock<IMapper>();
+            var controller = new BookController(repository, mapper.Object);
 
             //Act
             var response = await controller.Post(ExistIsbnDummyCreationBookDto());
@@ -168,8 +180,8 @@ namespace CrcAspNetCore.UnitTests.Controllers
             //Arrange
             var repository = BookContextMocker.GetInMemoryBookRepository
                 (nameof(update_book_with_correct_data_should_return_status_code_204));
-            var mapper = AutoMapperConfig.Initialize();
-            var controller = new BookController(repository, mapper);
+            var mapper = new Mock<IMapper>();
+            var controller = new BookController(repository, mapper.Object);
 
             //Act
             var response = await controller.Put(2, ExistIsbnDummyCreationBookDto());
@@ -184,8 +196,8 @@ namespace CrcAspNetCore.UnitTests.Controllers
             //Arrange
             var repository = BookContextMocker.GetInMemoryBookRepository
                 (nameof(post_book_with_exist_isbn_should_return_status_code_409));
-            var mapper = AutoMapperConfig.Initialize();
-            var controller = new BookController(repository, mapper);
+            var mapper = new Mock<IMapper>();
+            var controller = new BookController(repository, mapper.Object);
 
             //Act
             var response = await controller.Put(222, ExistIsbnDummyCreationBookDto()) as ObjectResult;
